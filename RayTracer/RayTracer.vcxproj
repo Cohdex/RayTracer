@@ -115,6 +115,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Background.h" />
+    <ClInclude Include="BackgroundColor.h" />
+    <ClInclude Include="BackgroundGradient.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="ImageUtil.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="stb_image_write.h" />
+    <ClInclude Include="Vec3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BackgroundColor.cpp" />
+    <ClCompile Include="BackgroundGradient.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="ImageUtil.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Ray.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
