@@ -12,6 +12,7 @@ struct Sphere
 {
 	Vec3 center;
 	double radius;
+	Vec3 color;
 };
 
 struct RayHit
@@ -61,7 +62,8 @@ int main(void)
 	Vec3 vertical(0.0, 8.0, 0.0);
 
 	std::vector<Sphere> spheres;
-	spheres.push_back({ Vec3(0.0, 0.0, -1.0), 0.5 });
+	spheres.push_back({ Vec3(0.0, 0.0, -1.0), 0.5, Vec3(1.0, 0.0, 0.0) });
+	spheres.push_back({ Vec3(0.3, 0.0, -1.3), 0.5, Vec3(0.0, 0.0, 1.0) });
 
 	for (int y = 0; y < h; y++) {
 		for (int x = 0; x < w; x++) {
@@ -89,7 +91,8 @@ Vec3 get_color(std::vector<Sphere> spheres, const Ray& ray, const Background* ba
 		{
 			Ray bounceRay(rayHit.position, rayHit.normal);
 			//return background->getColor(bounceRay);
-			return rayHit.normal;
+			//return rayHit.normal * 0.5 + 0.5;
+			return s.color;
 		}
 	}
 	return background->getColor(ray);

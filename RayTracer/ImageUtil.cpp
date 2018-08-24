@@ -21,7 +21,7 @@ void ImageUtil::writeImage(const std::string& filename, int width, int height, c
 			for (int i = 0; i < comp; i++)
 			{
 				double p = pixel[i];
-				//p = std::pow(p, 1.0 / 2.2);
+				p = std::pow(p, 1.0 / 2.2);
 				unsigned char c = (unsigned char)Math::min((int)(p * 256), 255);
 				data[index + i] = c;
 			}
