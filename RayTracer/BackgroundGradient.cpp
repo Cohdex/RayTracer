@@ -10,5 +10,5 @@ BackgroundGradient::BackgroundGradient(const Vec3& topColor, const Vec3& bottomC
 Vec3 BackgroundGradient::getColor(const Ray& ray) const
 {
 	double t = ray.getDirection().y * 0.5 + 0.5;
-	return Math::lerp(bottomColor, topColor, t);
+	return Math::pow(Math::lerp(bottomColor, topColor, t), 2.2);
 }

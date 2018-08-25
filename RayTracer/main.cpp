@@ -5,6 +5,7 @@
 #include "BackgroundGradient.h"
 #include "IHitable.h"
 #include "Sphere.h"
+#include "Math.h"
 
 #include <memory>
 #include <vector>
@@ -25,8 +26,8 @@ int main(void)
 	Vec3 origin(0.0, 0.0, 0.0);
 
 	std::vector<std::unique_ptr<IHitable>> hitables;
+	hitables.push_back(std::make_unique<Sphere>(Vec3(0.4, 0.0, -1.3), 0.5));
 	hitables.push_back(std::make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5));
-	hitables.push_back(std::make_unique<Sphere>(Vec3(0.3, 0.0, -1.3), 0.5));
 
 	for (int y = 0; y < h; y++) {
 		for (int x = 0; x < w; x++) {
@@ -47,16 +48,23 @@ int main(void)
 
 Vec3 get_color(const std::vector<std::unique_ptr<IHitable>>& hitables, const Ray& ray, const Background* background)
 {
+	HitRecord closestHit;
+	closestHit.t = -1.0;
 	for (const std::unique_ptr<IHitable>& h : hitables)
 	{
 		HitRecord hitRecord;
-		if (h->hit(ray, &hitRecord))
+		if (h->hit(ray, &hitRecord) && (closestHit.t <= 0.0 || hitRecord.t < closestHit.t))
 		{
-			Ray bounceRay(hitRecord.position, hitRecord.normal);
-			//return background->getColor(bounceRay);
-			return hitRecord.normal * 0.5 + 0.5;
-			//return s.color;
+			closestHit = hitRecord;
 		}
 	}
+
+	if (closestHit.t > 0.0)
+	{
+		Ray bounceRay(closestHit.position, -closestHit.normal);
+		return background->getColor(bounceRay);
+		//return hitRecord.normal * 0.5 + 0.5;
+	}
+
 	return background->getColor(ray);
 }
