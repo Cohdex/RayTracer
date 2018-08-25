@@ -1,5 +1,4 @@
 #include "Image.h"
-#include "ImageUtil.h"
 #include "Ray.h"
 #include "Background.h"
 #include "BackgroundColor.h"
@@ -28,9 +27,9 @@ bool sphere_hit(const Ray& ray, const Sphere& sphere, RayHit* rayHit)
 	Vec3 oc = ray.getOrigin() - sphere.center;
 	double a = ray.getDirection().lengthSquared();
 	double b = 2.0 * oc.dot(ray.getDirection());
-	double c = oc.lengthSquared() * sphere.radius*sphere.radius;
+	double c = oc.lengthSquared() - sphere.radius*sphere.radius;
 	double d = b*b - 4*a*c;
-	if (d <= 0.0)
+	if (d < 0.0)
 	{
 		return false;
 	}
@@ -50,16 +49,16 @@ bool sphere_hit(const Ray& ray, const Sphere& sphere, RayHit* rayHit)
 
 int main(void)
 {
-	constexpr int w = 600;
-	constexpr int h = 400;
+	constexpr int w = 1000;
+	constexpr int h = 500;
 	Image image(w, h);
 
-	std::unique_ptr<Background> background(new BackgroundGradient(Vec3(0.5, 0.7, 1.0), Vec3(1.0, 1.0, 1.0)));
+	std::unique_ptr<Background> background = std::make_unique<BackgroundGradient>(Vec3(0.5, 0.7, 1.0), Vec3(1.0, 1.0, 1.0));
 
+	Vec3 lowerLeft(-2.0, -1.0, -1.0);
+	Vec3 horizontal(4.0, 0.0, 0.0);
+	Vec3 vertical(0.0, 2.0, 0.0);
 	Vec3 origin(0.0, 0.0, 0.0);
-	Vec3 lowerLeft(-6.0, -4.0, -1.0);
-	Vec3 horizontal(12.0, 0.0, 0.0);
-	Vec3 vertical(0.0, 8.0, 0.0);
 
 	std::vector<Sphere> spheres;
 	spheres.push_back({ Vec3(0.0, 0.0, -1.0), 0.5, Vec3(1.0, 0.0, 0.0) });
@@ -77,7 +76,7 @@ int main(void)
 		}
 	}
 
-	ImageUtil::writeImage("output.png", w, h, image);
+	image.write("output.png");
 
 	return 0;
 }
@@ -91,8 +90,8 @@ Vec3 get_color(std::vector<Sphere> spheres, const Ray& ray, const Background* ba
 		{
 			Ray bounceRay(rayHit.position, rayHit.normal);
 			//return background->getColor(bounceRay);
-			//return rayHit.normal * 0.5 + 0.5;
-			return s.color;
+			return rayHit.normal * 0.5 + 0.5;
+			//return s.color;
 		}
 	}
 	return background->getColor(ray);

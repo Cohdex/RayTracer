@@ -3,6 +3,7 @@
 #include "Vec3.h"
 
 #include <vector>
+#include <string>
 
 class Image
 {
@@ -19,4 +20,6 @@ public:
 
 	Vec3 getPixel(int x, int y) const;
 	void setPixel(int x, int y, const Vec3& color);
+
+	void write(const std::string& filename) const;
 };

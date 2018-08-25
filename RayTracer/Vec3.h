@@ -47,9 +47,17 @@ public:
 		return std::sqrt(len2);
 	}
 
-	double dot(const Vec3& other) const
+	double dot(const Vec3& right) const
 	{
-		return x * other.x + y * other.y + z * other.z;
+		return x * right.x + y * right.y + z * right.z;
+	}
+
+	Vec3 cross(const Vec3& right) const
+	{
+		double cx = (y * right.z) - (z * right.y);
+		double cy = (-x * right.z) - (z * right.x);
+		double cz = (x * right.y) - (y * right.x);
+		return Vec3(cx, cy, cz);
 	}
 
 	Vec3& normalize()
@@ -97,6 +105,10 @@ public:
 inline Vec3 operator+(const Vec3& left, const Vec3& right)
 {
 	return Vec3(left.x + right.x, left.y + right.y, left.z + right.z);
+}
+inline Vec3 operator+(const Vec3& right)
+{
+	return right;
 }
 
 inline Vec3 operator-(const Vec3& left, const Vec3& right)
