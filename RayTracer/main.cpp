@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <vector>
+#include <iostream>
 
 Vec3 get_color(const Ray& ray);
 
@@ -19,8 +20,8 @@ std::unique_ptr<Texture> texture;
 
 int main(void)
 {
-	constexpr int w = 600;
-	constexpr int h = 300;
+	constexpr int w = 1200;
+	constexpr int h = 600;
 	Image image(w, h);
 
 	background = std::make_unique<BackgroundGradient>(Vec3(0.5, 0.7, 1.0), Vec3(1.0, 1.0, 1.0));
@@ -35,6 +36,10 @@ int main(void)
 
 	texture = std::make_unique<Texture>("hexagon_pattern.jpg");
 
+	int totalWork = w * h;
+	int completedWork = 0;
+	int percentCounter = 0;
+
 	for (int y = 0; y < h; y++) {
 		for (int x = 0; x < w; x++) {
 			double u = (x + 0.5) / w;
@@ -46,8 +51,17 @@ int main(void)
 			Vec3 color = get_color(ray);
 			color = Math::pow(color, 1.0 / 2.2);
 			image.setPixel(x, y, color);
+
+			completedWork++;
+			int percent = 100 * completedWork / totalWork;
+			if (percent - percentCounter >= 10)
+			{
+				percentCounter = percent;
+				std::cout << "Progress: " << percent << "%" << std::endl;
+			}
 		}
 	}
+	std::cout << "Done! Writing result...";
 
 	image.write("output.png");
 
@@ -69,10 +83,10 @@ Vec3 get_color(const Ray& ray)
 
 	if (closestHit.t > 0.0)
 	{
-		//Ray bounceRay(closestHit.position, -closestHit.normal);
+		Ray bounceRay(closestHit.position, -closestHit.normal);
 		//return background->getColor(bounceRay);
-		//return hitRecord.normal * 0.5 + 0.5;
-		return texture->sample(closestHit.textureU, closestHit.textureV);
+		//return closestHit.normal * 0.5 + 0.5;
+		return Math::lerp(texture->sample(closestHit.textureU, closestHit.textureV), background->getColor(bounceRay), 0.5) * (closestHit.normal * 0.5 + 0.5);
 	}
 
 	return background->getColor(ray);
