@@ -18,5 +18,6 @@ public:
 	int getWidth() const { return width; }
 	int getHeight() const { return height; }
 
-	const Vec3& sample(double u, double v);
+	Vec3 sampleNearest(double u, double v);
+	Vec3 sampleLinear(double u, double v);
 };
