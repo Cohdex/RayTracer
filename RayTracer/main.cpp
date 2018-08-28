@@ -20,8 +20,8 @@ static std::unique_ptr<Texture> texture;
 
 int main(void)
 {
-	constexpr int w = 600;
-	constexpr int h = 300;
+	constexpr int w = 1200;
+	constexpr int h = 600;
 	Image image(w, h);
 
 	background = std::make_unique<BackgroundGradient>(Vec3(0.5, 0.7, 1.0), Vec3(1.0, 1.0, 1.0));
@@ -85,7 +85,7 @@ static Vec3 get_color(const Ray& ray)
 		Ray bounceRay(closestHit.position, -closestHit.normal);
 		//return background->getColor(bounceRay);
 		//return closestHit.normal * 0.5 + 0.5;
-		return Math::lerp(texture->sampleLinear(closestHit.textureU, closestHit.textureV), background->getColor(bounceRay), 0.5) * (closestHit.normal * 0.5 + 0.5);
+		return Math::lerp(texture->sampleLinear(closestHit.textureU, closestHit.textureV) * 0.96 + 0.04, background->getColor(bounceRay), 0.5) * (closestHit.normal * 0.5 + 0.5);
 	}
 
 	return background->getColor(ray);
