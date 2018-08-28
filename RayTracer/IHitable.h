@@ -8,6 +8,8 @@ struct HitRecord
 	double t;
 	Vec3 position;
 	Vec3 normal;
+	double textureU;
+	double textureV;
 };
 
 class IHitable

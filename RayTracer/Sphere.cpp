@@ -23,6 +23,8 @@ bool Sphere::hit(const Ray& ray, HitRecord* hitRecord) const
 				hitRecord->t = t;
 				hitRecord->position = ray.getPoint(t);
 				hitRecord->normal = (hitRecord->position - center).normalize();
+				hitRecord->textureU = std::asin(hitRecord->normal.x) / Math::pi<double>() + 0.5;
+				hitRecord->textureV = std::asin(hitRecord->normal.y) / Math::pi<double>() + 0.5;
 			}
 		};
 

@@ -11,7 +11,11 @@
 #include <memory>
 #include <vector>
 
-Vec3 get_color(const std::vector<std::unique_ptr<IHitable>>& hitables, const Ray& ray, const Background* background);
+Vec3 get_color(const Ray& ray);
+
+std::unique_ptr<Background> background;
+std::vector<std::unique_ptr<IHitable>> hitables;
+std::unique_ptr<Texture> texture;
 
 int main(void)
 {
@@ -19,16 +23,17 @@ int main(void)
 	constexpr int h = 300;
 	Image image(w, h);
 
-	std::unique_ptr<Background> background = std::make_unique<BackgroundGradient>(Vec3(0.5, 0.7, 1.0), Vec3(1.0, 1.0, 1.0));
+	background = std::make_unique<BackgroundGradient>(Vec3(0.5, 0.7, 1.0), Vec3(1.0, 1.0, 1.0));
 
 	Vec3 lowerLeft(-2.0, -1.0, -1.0);
 	Vec3 horizontal(4.0, 0.0, 0.0);
 	Vec3 vertical(0.0, 2.0, 0.0);
 	Vec3 origin(0.0, 0.0, 0.0);
 
-	std::vector<std::unique_ptr<IHitable>> hitables;
 	hitables.push_back(std::make_unique<Sphere>(Vec3(0.4, 0.0, -1.3), 0.5));
 	hitables.push_back(std::make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5));
+
+	texture = std::make_unique<Texture>("hexagon_pattern.jpg");
 
 	for (int y = 0; y < h; y++) {
 		for (int x = 0; x < w; x++) {
@@ -38,7 +43,9 @@ int main(void)
 			Vec3 direction(lowerLeft + horizontal*u + vertical*v);
 			Ray ray(origin, direction);
 
-			image.setPixel(x, y, get_color(hitables, ray, background.get()));
+			Vec3 color = get_color(ray);
+			color = Math::pow(color, 1.0 / 2.2);
+			image.setPixel(x, y, color);
 		}
 	}
 
@@ -47,7 +54,7 @@ int main(void)
 	return 0;
 }
 
-Vec3 get_color(const std::vector<std::unique_ptr<IHitable>>& hitables, const Ray& ray, const Background* background)
+Vec3 get_color(const Ray& ray)
 {
 	HitRecord closestHit;
 	closestHit.t = -1.0;
@@ -62,9 +69,10 @@ Vec3 get_color(const std::vector<std::unique_ptr<IHitable>>& hitables, const Ray
 
 	if (closestHit.t > 0.0)
 	{
-		Ray bounceRay(closestHit.position, -closestHit.normal);
-		return background->getColor(bounceRay);
+		//Ray bounceRay(closestHit.position, -closestHit.normal);
+		//return background->getColor(bounceRay);
 		//return hitRecord.normal * 0.5 + 0.5;
+		return texture->sample(closestHit.textureU, closestHit.textureV);
 	}
 
 	return background->getColor(ray);
