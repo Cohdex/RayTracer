@@ -33,6 +33,7 @@ void Image::write(const std::string& filename) const
 		for (int x = 0; x < width; x++)
 		{
 			Vec3 pixel = getPixel(x, y);
+			pixel = Math::pow(pixel, 1.0 / 2.2);
 			int index = (x + y * width) * comp;
 			for (int i = 0; i < comp; i++)
 			{

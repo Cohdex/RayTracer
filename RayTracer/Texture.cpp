@@ -16,6 +16,7 @@ Texture::Texture(const std::string& filename)
 		p.y = data[i * 3 + 1];
 		p.z = data[i * 3 + 2];
 		p /= 255.0;
+		p = Math::pow(p, 2.2);
 		pixels[i] = p;
 	}
 	stbi_image_free(data);

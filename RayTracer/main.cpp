@@ -12,11 +12,11 @@
 #include <vector>
 #include <iostream>
 
-Vec3 get_color(const Ray& ray);
+static Vec3 get_color(const Ray& ray);
 
-std::unique_ptr<Background> background;
-std::vector<std::unique_ptr<IHitable>> hitables;
-std::unique_ptr<Texture> texture;
+static std::unique_ptr<Background> background;
+static std::vector<std::unique_ptr<IHitable>> hitables;
+static std::unique_ptr<Texture> texture;
 
 int main(void)
 {
@@ -49,7 +49,6 @@ int main(void)
 			Ray ray(origin, direction);
 
 			Vec3 color = get_color(ray);
-			color = Math::pow(color, 1.0 / 2.2);
 			image.setPixel(x, y, color);
 
 			completedWork++;
@@ -68,7 +67,7 @@ int main(void)
 	return 0;
 }
 
-Vec3 get_color(const Ray& ray)
+static Vec3 get_color(const Ray& ray)
 {
 	HitRecord closestHit;
 	closestHit.t = -1.0;
