@@ -6,6 +6,7 @@
 #include "IHitable.h"
 #include "Sphere.h"
 #include "Math.h"
+#include "Texture.h"
 
 #include <memory>
 #include <vector>

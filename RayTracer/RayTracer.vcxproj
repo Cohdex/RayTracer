@@ -123,7 +123,9 @@
     <ClInclude Include="Math.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
   <ItemGroup>
@@ -133,8 +135,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="hexagon_pattern.jpg" />
     <Image Include="output.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

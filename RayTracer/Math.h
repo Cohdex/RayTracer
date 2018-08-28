@@ -6,6 +6,12 @@ class Math
 
 public:
 	template<typename T>
+	static T pi()
+	{
+		return T(3.14159265359);
+	}
+
+	template<typename T>
 	static T min(const T& a, const T& b)
 	{
 		return a < b ? a : b;
@@ -15,6 +21,12 @@ public:
 	static T max(const T& a, const T& b)
 	{
 		return a > b ? a : b;
+	}
+
+	template<typename T>
+	static T clamp(const T& x, const T& min, const T& max)
+	{
+		return x < min ? min : x > max ? max : x;
 	}
 
 	template<typename T, typename Q>

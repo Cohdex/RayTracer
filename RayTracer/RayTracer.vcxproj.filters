@@ -48,6 +48,12 @@
     <ClInclude Include="stb_image_write.h">
       <Filter>Dependencies</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -68,9 +74,15 @@
     <ClCompile Include="Sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="output.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="hexagon_pattern.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
