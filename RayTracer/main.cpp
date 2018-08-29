@@ -14,8 +14,8 @@
 
 static Vec3 get_color(const Ray& ray);
 
-static std::unique_ptr<Background> background;
 static std::vector<std::unique_ptr<IHitable>> hitables;
+static std::unique_ptr<Background> background;
 static std::unique_ptr<Texture> texture;
 
 int main(void)
@@ -24,8 +24,6 @@ int main(void)
 	constexpr int h = 600;
 	Image image(w, h);
 
-	background = std::make_unique<BackgroundGradient>(Vec3(0.5, 0.7, 1.0), Vec3(1.0, 1.0, 1.0));
-
 	Vec3 lowerLeft(-2.0, -1.0, -1.0);
 	Vec3 horizontal(4.0, 0.0, 0.0);
 	Vec3 vertical(0.0, 2.0, 0.0);
@@ -33,6 +31,8 @@ int main(void)
 
 	hitables.push_back(std::make_unique<Sphere>(Vec3(0.4, 0.0, -1.3), 0.5));
 	hitables.push_back(std::make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5));
+
+	background = std::make_unique<BackgroundGradient>(Vec3(0.5, 0.7, 1.0), Vec3(1.0, 1.0, 1.0));
 
 	texture = std::make_unique<Texture>("hexagon_pattern.jpg");
 
