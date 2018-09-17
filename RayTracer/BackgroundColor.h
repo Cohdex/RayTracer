@@ -5,10 +5,10 @@
 class BackgroundColor : public Background
 {
 private:
-	Vec3 color;
+	glm::dvec3 color;
 
 public:
-	BackgroundColor(const Vec3& color);
+	BackgroundColor(const glm::dvec3& color);
 
-	virtual Vec3 getColor(const Ray& ray) const override;
+	virtual glm::dvec3 getColor(const Ray& ray) const override;
 };

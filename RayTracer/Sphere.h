@@ -5,11 +5,11 @@
 class Sphere : public IHitable
 {
 private:
-	Vec3 center;
+	glm::dvec3 center;
 	double radius;
 
 public:
-	Sphere(const Vec3& center, double radius);
+	Sphere(const glm::dvec3& center, double radius);
 
 	virtual bool hit(const Ray& ray, HitRecord* hitRecord) const override;
 };

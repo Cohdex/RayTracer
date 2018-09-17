@@ -1,14 +1,14 @@
 #pragma once
 
+#include "glm/glm.hpp"
+
 #include <string>
 #include <vector>
-
-#include "Vec3.h"
 
 class Texture
 {
 private:
-	std::vector<Vec3> pixels;
+	std::vector<glm::dvec3> pixels;
 	int width;
 	int height;
 
@@ -18,6 +18,6 @@ public:
 	int getWidth() const { return width; }
 	int getHeight() const { return height; }
 
-	Vec3 sampleNearest(double u, double v);
-	Vec3 sampleLinear(double u, double v);
+	glm::dvec3 sampleNearest(double u, double v);
+	glm::dvec3 sampleLinear(double u, double v);
 };

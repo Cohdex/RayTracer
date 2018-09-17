@@ -1,18 +1,19 @@
 #include "Sphere.h"
 
-#include "Math.h"
+#include "glm/gtc/constants.hpp"
+#include "glm/gtx/norm.hpp"
 
-Sphere::Sphere(const Vec3& center, double radius)
+Sphere::Sphere(const glm::dvec3& center, double radius)
 	: center(center), radius(radius)
 {
 }
 
 bool Sphere::hit(const Ray& ray, HitRecord* hitRecord) const
 {
-	Vec3 oc = ray.getOrigin() - center;
-	double a = ray.getDirection().lengthSquared();
-	double b = oc.dot(ray.getDirection());
-	double c = oc.lengthSquared() - (radius * radius);
+	glm::dvec3 oc = ray.getOrigin() - center;
+	double a = glm::length2(ray.getDirection());
+	double b = glm::dot(oc, ray.getDirection());
+	double c = glm::length(oc) - (radius * radius);
 	double d = (b * b) - (a * c);
 
 	if (d > 0.0)
@@ -22,20 +23,20 @@ bool Sphere::hit(const Ray& ray, HitRecord* hitRecord) const
 			{
 				hitRecord->t = t;
 				hitRecord->position = ray.getPoint(t);
-				hitRecord->normal = (hitRecord->position - center).normalize();
-				hitRecord->textureU = std::asin(hitRecord->normal.x) / Math::pi<double>() + 0.5;
-				hitRecord->textureV = std::asin(hitRecord->normal.y) / Math::pi<double>() + 0.5;
+				hitRecord->normal = glm::normalize(hitRecord->position - center);
+				hitRecord->textureU = glm::asin(hitRecord->normal.x) / glm::pi<double>() + 0.5;
+				hitRecord->textureV = glm::asin(hitRecord->normal.y) / glm::pi<double>() + 0.5;
 			}
 		};
 
-		double t = (-b - std::sqrt(d)) / a;
+		double t = (-b - glm::sqrt(d)) / a;
 		if (t > 0.0)
 		{
 			recordData(t);
 			return true;
 		}
 
-		t = (-b + std::sqrt(d)) / a;
+		t = (-b + glm::sqrt(d)) / a;
 		if (t > 0.0)
 		{
 			recordData(t);

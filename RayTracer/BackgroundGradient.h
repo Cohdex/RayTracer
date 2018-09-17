@@ -5,11 +5,11 @@
 class BackgroundGradient : public Background
 {
 private:
-	Vec3 topColor;
-	Vec3 bottomColor;
+	glm::dvec3 topColor;
+	glm::dvec3 bottomColor;
 
 public:
-	BackgroundGradient(const Vec3& topColor, const Vec3& bottomColor);
+	BackgroundGradient(const glm::dvec3& topColor, const glm::dvec3& bottomColor);
 
-	virtual Vec3 getColor(const Ray& ray) const override;
+	virtual glm::dvec3 getColor(const Ray& ray) const override;
 };

@@ -1,11 +1,11 @@
 #include "BackgroundColor.h"
 
-BackgroundColor::BackgroundColor(const Vec3& color)
+BackgroundColor::BackgroundColor(const glm::dvec3& color)
 	: color(color)
 {
 }
 
-Vec3 BackgroundColor::getColor(const Ray& ray) const
+glm::dvec3 BackgroundColor::getColor(const Ray& ray) const
 {
 	return color;
 }

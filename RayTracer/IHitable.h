@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Vec3.h"
 #include "Ray.h"
 
 struct HitRecord
 {
 	double t;
-	Vec3 position;
-	Vec3 normal;
+	glm::dvec3 position;
+	glm::dvec3 normal;
 	double textureU;
 	double textureV;
 };

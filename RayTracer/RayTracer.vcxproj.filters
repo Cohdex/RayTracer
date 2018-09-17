@@ -18,13 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vec3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Ray.h">

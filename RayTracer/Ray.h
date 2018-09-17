@@ -1,19 +1,19 @@
 #pragma once
 
-#include "Vec3.h"
+#include "glm/glm.hpp"
 
 class Ray
 {
 private:
-	Vec3 origin;
-	Vec3 direction;
+	glm::dvec3 origin;
+	glm::dvec3 direction;
 
 public:
 	Ray() { }
-	Ray(const Vec3& origin, const Vec3& direction);
+	Ray(const glm::dvec3& origin, const glm::dvec3& direction);
 
-	const Vec3& getOrigin() const { return origin; }
-	const Vec3& getDirection() const { return direction; }
+	const glm::dvec3& getOrigin() const { return origin; }
+	const glm::dvec3& getDirection() const { return direction; }
 
-	Vec3 getPoint(double t) const;
+	glm::dvec3 getPoint(double t) const;
 };

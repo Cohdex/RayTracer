@@ -5,19 +5,19 @@
 #define STBI_MSC_SECURE_CRT
 #include "stb_image_write.h"
 
-#include "Math.h"
+#include "glm/exponential.hpp"
 
 Image::Image(int width, int height)
 	: width(width), height(height), data(width * height)
 {
 }
 
-Vec3 Image::getPixel(int x, int y) const
+glm::dvec3 Image::getPixel(int x, int y) const
 {
 	return data[x + y * width];
 }
 
-void Image::setPixel(int x, int y, const Vec3& color)
+void Image::setPixel(int x, int y, const glm::dvec3& color)
 {
 	data[x + y * width] = color;
 }
@@ -33,13 +33,13 @@ void Image::write(const std::string& filename) const
 	{
 		for (int x = 0; x < width; x++)
 		{
-			Vec3 pixel = getPixel(x, y);
-			pixel = Math::pow(pixel, 1.0 / 2.2);
+			glm::dvec3 pixel = getPixel(x, y);
+			pixel = glm::pow(pixel, glm::dvec3(1.0 / 2.2));
 			int index = (x + y * width) * comp;
 			for (int i = 0; i < comp; i++)
 			{
 				double c = pixel[i];
-				data[index + i] = (unsigned char)Math::min((int)(c * 256), 255);
+				data[index + i] = (unsigned char)glm::min((int)(c * 256), 255);
 			}
 		}
 	}
