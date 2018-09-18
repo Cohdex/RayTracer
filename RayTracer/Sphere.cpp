@@ -13,7 +13,7 @@ bool Sphere::hit(const Ray& ray, HitRecord* hitRecord) const
 	glm::dvec3 oc = ray.getOrigin() - center;
 	double a = glm::length2(ray.getDirection());
 	double b = glm::dot(oc, ray.getDirection());
-	double c = glm::length(oc) - (radius * radius);
+	double c = glm::length2(oc) - (radius * radius);
 	double d = (b * b) - (a * c);
 
 	if (d > 0.0)
