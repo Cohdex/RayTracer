@@ -2,6 +2,7 @@
 
 #include "Texture.h"
 
+#include "glm/exponential.hpp"
 #include "glm/gtc/constants.hpp"
 
 #include <memory>
@@ -16,9 +17,9 @@ BackgroundGradient::BackgroundGradient(const glm::dvec3& topColor, const glm::dv
 
 glm::dvec3 BackgroundGradient::getColor(const Ray& ray) const
 {
-	//double t = ray.getDirection().y * 0.5 + 0.5;
-	//return Math::pow(Math::lerp(bottomColor, topColor, t), 2.2);
-	double textureU = std::asin(ray.getDirection().x) / glm::pi<double>() + 0.5;
-	double textureV = std::asin(ray.getDirection().y) / glm::pi<double>() + 0.5;
-	return texture->sampleLinear(textureU, textureV);
+	double t = ray.getDirection().y * 0.5 + 0.5;
+	return glm::pow(glm::mix(bottomColor, topColor, t), glm::dvec3(2.2));
+	//double textureU = std::asin(ray.getDirection().x) / glm::pi<double>() + 0.5;
+	//double textureV = std::asin(ray.getDirection().y) / glm::pi<double>() + 0.5;
+	//return texture->sampleLinear(textureU, textureV);
 }
