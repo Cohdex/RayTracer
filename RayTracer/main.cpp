@@ -1,5 +1,6 @@
 #include "Image.h"
 #include "Ray.h"
+#include "Camera.h"
 #include "Background.h"
 #include "BackgroundColor.h"
 #include "BackgroundGradient.h"
@@ -20,38 +21,16 @@
 
 static constexpr int width = 2000;
 static constexpr int height = 1000;
-static constexpr int numWorkers = 4;
+static constexpr int numWorkers = 8;
 
+static void rowCompleted();
 static void render_worker(Image* image, int startRow, int endRow);
 static glm::dvec3 get_color(const Ray& ray, int bounceLimit);
 
+static Camera camera;
 static std::vector<std::unique_ptr<IHitable>> hitables;
 static std::unique_ptr<Background> background;
 static std::unique_ptr<Texture> texture;
-
-static glm::dvec3 lowerLeft(-2.0, -1.0, -1.0);
-static glm::dvec3 horizontal(4.0, 0.0, 0.0);
-static glm::dvec3 vertical(0.0, 2.0, 0.0);
-static glm::dvec3 origin(0.0, 0.0, 0.0);
-
-static void rowCompleted()
-{
-	static std::mutex mutex;
-	static unsigned int totalWork = width * height;
-	static unsigned int completedWork = 0;
-	static unsigned int percentCounter = 0;
-
-	std::lock_guard<std::mutex> lock(mutex);
-
-	completedWork += width;
-
-	unsigned int percent = 100u * completedWork / totalWork;
-	if (percent - percentCounter >= 10u)
-	{
-		percentCounter = percent;
-		std::cout << "Progress: " << percent << "%" << std::endl;
-	}
-}
 
 int main(void)
 {
@@ -96,6 +75,25 @@ int main(void)
 	return 0;
 }
 
+static void rowCompleted()
+{
+	static std::mutex mutex;
+	static unsigned int totalWork = width * height;
+	static unsigned int completedWork = 0;
+	static unsigned int percentCounter = 0;
+
+	std::lock_guard<std::mutex> lock(mutex);
+
+	completedWork += width;
+
+	unsigned int percent = 100u * completedWork / totalWork;
+	if (percent - percentCounter >= 10u)
+	{
+		percentCounter = percent;
+		std::cout << "Progress: " << percent << "%" << std::endl;
+	}
+}
+
 static void render_worker(Image* image, int startRow, int endRow)
 {
 	for (int y = startRow; y < endRow; y++)
@@ -105,8 +103,7 @@ static void render_worker(Image* image, int startRow, int endRow)
 			double u = (x + 0.5) / width;
 			double v = (y + 0.5) / height;
 
-			glm::dvec3 direction(lowerLeft + horizontal * u + vertical * v);
-			Ray ray(origin, direction);
+			Ray ray = camera.getRay(u, v);
 
 			glm::dvec3 color = get_color(ray, 100);
 			image->setPixel(x, y, color);
