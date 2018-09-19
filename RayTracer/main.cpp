@@ -17,8 +17,8 @@
 #include <mutex>
 #include <chrono>
 
-static constexpr int width = 1200*6;
-static constexpr int height = 600*6;
+static constexpr int width = 1200;
+static constexpr int height = 600;
 static constexpr int numWorkers = 4;
 
 static void render_worker(Image* image, int startRow, int endRow);
