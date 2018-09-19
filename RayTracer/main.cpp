@@ -47,7 +47,7 @@ int main(void)
 	int numWorkers = std::thread::hardware_concurrency();
 	std::vector<std::thread> workerThreads(numWorkers);
 
-	auto startTime = std::chrono::system_clock::now();
+	auto startTime = std::chrono::high_resolution_clock::now();
 
 	for (int i = 0; i < numWorkers; i++)
 	{
@@ -62,7 +62,7 @@ int main(void)
 		worker.join();
 	}
 
-	auto endTime = std::chrono::system_clock::now();
+	auto endTime = std::chrono::high_resolution_clock::now();
 
 	std::chrono::duration<double> elapsedTime = endTime - startTime;
 
