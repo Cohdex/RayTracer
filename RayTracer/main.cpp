@@ -13,23 +13,48 @@
 #include <memory>
 #include <vector>
 #include <iostream>
+#include <thread>
+#include <mutex>
+#include <chrono>
 
+static constexpr int width = 1200*6;
+static constexpr int height = 600*6;
+static constexpr int numWorkers = 4;
+
+static void render_worker(Image* image, int startRow, int endRow);
 static glm::dvec3 get_color(const Ray& ray, int bounceLimit);
 
 static std::vector<std::unique_ptr<IHitable>> hitables;
 static std::unique_ptr<Background> background;
 static std::unique_ptr<Texture> texture;
 
+static glm::dvec3 lowerLeft(-2.0, -1.0, -1.0);
+static glm::dvec3 horizontal(4.0, 0.0, 0.0);
+static glm::dvec3 vertical(0.0, 2.0, 0.0);
+static glm::dvec3 origin(0.0, 0.0, 0.0);
+
+static void rowCompleted()
+{
+	static std::mutex mutex;
+	static int totalWork = height;
+	static int completedWork = 0;
+	static int percentCounter = 0;
+
+	std::lock_guard<std::mutex> lock(mutex);
+
+	completedWork += 1;
+
+	int percent = 100 * completedWork / totalWork;
+	if (percent - percentCounter >= 10)
+	{
+		percentCounter = percent;
+		std::cout << "Progress: " << percent << "%" << std::endl;
+	}
+}
+
 int main(void)
 {
-	constexpr int w = 1200;
-	constexpr int h = 600;
-	Image image(w, h);
-
-	glm::dvec3 lowerLeft(-2.0, -1.0, -1.0);
-	glm::dvec3 horizontal(4.0, 0.0, 0.0);
-	glm::dvec3 vertical(0.0, 2.0, 0.0);
-	glm::dvec3 origin(0.0, 0.0, 0.0);
+	Image image(width, height);
 
 	hitables.push_back(std::make_unique<Sphere>(glm::dvec3(0.4, 0.0, -1.3), 0.5));
 	hitables.push_back(std::make_unique<Sphere>(glm::dvec3(0.0, 0.0, -1.0), 0.5));
@@ -39,35 +64,54 @@ int main(void)
 
 	texture = std::make_unique<Texture>("hexagon_pattern.jpg");
 
-	int totalWork = w * h;
-	int completedWork = 0;
-	int percentCounter = 0;
+	std::vector<std::thread> workerThreads(numWorkers);
 
-	for (int y = 0; y < h; y++) {
-		for (int x = 0; x < w; x++) {
-			double u = (x + 0.5) / w;
-			double v = (y + 0.5) / h;
+	auto startTime = std::chrono::system_clock::now();
 
-			glm::dvec3 direction(lowerLeft + horizontal*u + vertical*v);
+	for (int i = 0; i < numWorkers; i++)
+	{
+		int startRow = i * height / numWorkers;
+		int endRow = (i + 1) * height / numWorkers;
+
+		workerThreads[i] = std::thread(render_worker, &image, startRow, endRow);
+	}
+
+	for (auto& worker : workerThreads)
+	{
+		worker.join();
+	}
+
+	auto endTime = std::chrono::system_clock::now();
+
+	std::chrono::duration<double> elapsedTime = endTime - startTime;
+
+	std::cout << "Done! Took " << elapsedTime.count() << "s . Writing result..." << std::endl;
+	image.write("output.png");
+
+	std::cout << "Press Enter to exit...";
+	std::cin.get();
+
+	return 0;
+}
+
+static void render_worker(Image* image, int startRow, int endRow)
+{
+	for (int y = startRow; y < endRow; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			double u = (x + 0.5) / width;
+			double v = (y + 0.5) / height;
+
+			glm::dvec3 direction(lowerLeft + horizontal * u + vertical * v);
 			Ray ray(origin, direction);
 
 			glm::dvec3 color = get_color(ray, 100);
-			image.setPixel(x, y, color);
-
-			completedWork++;
-			int percent = 100 * completedWork / totalWork;
-			if (percent - percentCounter >= 10)
-			{
-				percentCounter = percent;
-				std::cout << "Progress: " << percent << "%" << std::endl;
-			}
+			image->setPixel(x, y, color);
 		}
+
+		rowCompleted();
 	}
-	std::cout << "Done! Writing result...";
-
-	image.write("output.png");
-
-	return 0;
 }
 
 static glm::dvec3 get_color(const Ray& ray, int bounceLimit)
