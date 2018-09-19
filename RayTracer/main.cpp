@@ -18,9 +18,11 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <random>
 
-static constexpr int width = 2000;
-static constexpr int height = 1000;
+static constexpr int width = 1800;
+static constexpr int height = 900;
+static constexpr int sampleCount = 128;
 
 static void rowCompleted();
 static void render_worker(Image* image, int startRow, int endRow);
@@ -96,16 +98,26 @@ static void rowCompleted()
 
 static void render_worker(Image* image, int startRow, int endRow)
 {
+	std::default_random_engine rndGen;
+	std::uniform_real_distribution<double> rndDist(0.0, 1.0);
+	auto rnd = std::bind(rndDist, rndGen);
+
 	for (int y = startRow; y < endRow; y++)
 	{
 		for (int x = 0; x < width; x++)
 		{
-			double u = (x + 0.5) / width;
-			double v = (y + 0.5) / height;
+			glm::dvec3 color;
+			for (int i = 0; i < sampleCount; i++)
+			{
+				double u = (x + rnd()) / width;
+				double v = (y + rnd()) / height;
 
-			Ray ray = camera.getRay(u, v);
+				Ray ray = camera.getRay(u, v);
 
-			glm::dvec3 color = get_color(ray, 100);
+				color += get_color(ray, 100);
+			}
+			color /= sampleCount;
+
 			image->setPixel(x, y, color);
 		}
 
@@ -132,9 +144,8 @@ static glm::dvec3 get_color(const Ray& ray, int bounceLimit)
 		Ray bounceRay(closestHit.position + bounceDirection * 1.0e-6, bounceDirection);
 		glm::dvec3 bounceColor = (bounceLimit <= 0 ? background->getColor(bounceRay) : get_color(bounceRay, bounceLimit - 1));
 		//return glm::mix(texture->sampleLinear(closestHit.textureU, closestHit.textureV) * 0.96 + 0.04, bounceColor, 0.5) * (closestHit.normal * 0.5 + 0.5);
-		return glm::mix(bounceRay.getDirection() * 0.5 + 0.5, bounceColor, 0.5) * (closestHit.normal * 0.5 + 0.5);
-		//return bounceColor;
-		//return bounceRay.getDirection() * 0.5 + 0.5;
+		return glm::mix(bounceRay.getDirection() * 0.5 + 0.5, bounceColor, 0.5)  * (closestHit.normal * 0.5 + 0.5);
+		//return bounceColor * 0.8;
 	}
 
 	return background->getColor(ray);
