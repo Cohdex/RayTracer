@@ -17,9 +17,12 @@ BackgroundGradient::BackgroundGradient(const glm::dvec3& topColor, const glm::dv
 
 glm::dvec3 BackgroundGradient::getColor(const Ray& ray) const
 {
+#if 0
 	double t = ray.getDirection().y * 0.5 + 0.5;
 	return glm::pow(glm::mix(bottomColor, topColor, t), glm::dvec3(2.2));
-	//double textureU = std::asin(ray.getDirection().x) / glm::pi<double>() + 0.5;
-	//double textureV = std::asin(ray.getDirection().y) / glm::pi<double>() + 0.5;
-	//return texture->sampleLinear(textureU, textureV);
+#else
+	double textureU = std::asin(ray.getDirection().x) / glm::pi<double>() + 0.5;
+	double textureV = std::asin(ray.getDirection().y) / glm::pi<double>() + 0.5;
+	return texture->sampleLinear(textureU, textureV);
+#endif
 }
