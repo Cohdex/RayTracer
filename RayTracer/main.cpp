@@ -21,7 +21,6 @@
 
 static constexpr int width = 2000;
 static constexpr int height = 1000;
-static constexpr int numWorkers = 8;
 
 static void rowCompleted();
 static void render_worker(Image* image, int startRow, int endRow);
@@ -45,6 +44,7 @@ int main(void)
 
 	texture = std::make_unique<Texture>("hexagon_pattern.jpg");
 
+	int numWorkers = std::thread::hardware_concurrency();
 	std::vector<std::thread> workerThreads(numWorkers);
 
 	auto startTime = std::chrono::system_clock::now();
@@ -66,7 +66,7 @@ int main(void)
 
 	std::chrono::duration<double> elapsedTime = endTime - startTime;
 
-	std::cout << "Done! Took " << elapsedTime.count() << "s . Writing result..." << std::endl;
+	std::cout << "Done! Took " << elapsedTime.count() << "s. Writing result..." << std::endl;
 	image.write("output.png");
 
 	std::cout << "Press Enter to exit...";
