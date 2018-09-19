@@ -36,16 +36,16 @@ static glm::dvec3 origin(0.0, 0.0, 0.0);
 static void rowCompleted()
 {
 	static std::mutex mutex;
-	static int totalWork = height;
-	static int completedWork = 0;
-	static int percentCounter = 0;
+	static unsigned int totalWork = width * height;
+	static unsigned int completedWork = 0;
+	static unsigned int percentCounter = 0;
 
 	std::lock_guard<std::mutex> lock(mutex);
 
-	completedWork += 1;
+	completedWork += width;
 
-	int percent = 100 * completedWork / totalWork;
-	if (percent - percentCounter >= 10)
+	unsigned int percent = 100u * completedWork / totalWork;
+	if (percent - percentCounter >= 10u)
 	{
 		percentCounter = percent;
 		std::cout << "Progress: " << percent << "%" << std::endl;
