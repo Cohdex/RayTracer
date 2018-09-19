@@ -14,5 +14,6 @@ struct HitRecord
 class IHitable
 {
 public:
+	virtual ~IHitable() { }
 	virtual bool hit(const Ray& ray, HitRecord* hitRecord) const = 0;
 };

@@ -5,6 +5,7 @@
 #include "BackgroundGradient.h"
 #include "IHitable.h"
 #include "Sphere.h"
+#include "Plane.h"
 #include "Texture.h"
 
 #include "glm/glm.hpp"
@@ -17,8 +18,8 @@
 #include <mutex>
 #include <chrono>
 
-static constexpr int width = 1200;
-static constexpr int height = 600;
+static constexpr int width = 2000;
+static constexpr int height = 1000;
 static constexpr int numWorkers = 4;
 
 static void render_worker(Image* image, int startRow, int endRow);
@@ -59,6 +60,7 @@ int main(void)
 	hitables.push_back(std::make_unique<Sphere>(glm::dvec3(0.4, 0.0, -1.3), 0.5));
 	hitables.push_back(std::make_unique<Sphere>(glm::dvec3(0.0, 0.0, -1.0), 0.5));
 	hitables.push_back(std::make_unique<Sphere>(glm::dvec3(1.0, 0.0, -0.5), 0.3));
+	hitables.push_back(std::make_unique<Plane>(glm::dvec3(0.0, -0.5, 0.0), glm::normalize(-glm::dvec3(0.0, 1.0, 0.2))));
 
 	background = std::make_unique<BackgroundGradient>(glm::dvec3(0.5, 0.7, 1.0), glm::dvec3(1.0, 1.0, 1.0));
 
