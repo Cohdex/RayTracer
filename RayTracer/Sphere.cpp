@@ -30,14 +30,14 @@ bool Sphere::hit(const Ray& ray, HitRecord* hitRecord) const
 		};
 
 		double t = (-b - glm::sqrt(d)) / a;
-		if (t > 0.0)
+		if (t > 1.0e-6)
 		{
 			recordData(t);
 			return true;
 		}
 
 		t = (-b + glm::sqrt(d)) / a;
-		if (t > 0.0)
+		if (t > 1.0e-6)
 		{
 			recordData(t);
 			return true;

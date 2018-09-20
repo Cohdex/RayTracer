@@ -12,7 +12,7 @@ bool Plane::hit(const Ray& ray, HitRecord* hitRecord) const
 	{
 		glm::dvec3 p = origin - ray.getOrigin();
 		double t = glm::dot(p, normal) / denom;
-		if (t >= 0.0)
+		if (t > 1.0e-6)
 		{
 			if (hitRecord != nullptr)
 			{
