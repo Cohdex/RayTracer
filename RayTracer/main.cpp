@@ -24,7 +24,7 @@ static constexpr int width = 1800;
 static constexpr int height = 900;
 static constexpr int sampleCount = 16;
 
-static void rowCompleted();
+static void row_completed();
 static void render_worker(Image* image, int startRow, int endRow);
 static glm::dvec3 get_color(const Ray& ray, int bounceLimit);
 
@@ -77,7 +77,7 @@ int main(void)
 	return 0;
 }
 
-static void rowCompleted()
+static void row_completed()
 {
 	static std::mutex mutex;
 	static unsigned int totalWork = (unsigned)width * (unsigned)height;
@@ -121,7 +121,7 @@ static void render_worker(Image* image, int startRow, int endRow)
 			image->setPixel(x, y, color);
 		}
 
-		rowCompleted();
+		row_completed();
 	}
 }
 
