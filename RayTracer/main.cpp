@@ -89,7 +89,7 @@ static void rowCompleted()
 	completedWork += width;
 
 	unsigned int percent = 100u * completedWork / totalWork;
-	if (percent - percentCounter >= 10u)
+	if (percent == 100u || (percent - percentCounter) >= 5u)
 	{
 		percentCounter = percent;
 		std::cout << "Progress: " << percent << "%" << std::endl;
@@ -143,8 +143,8 @@ static glm::dvec3 get_color(const Ray& ray, int bounceLimit)
 		glm::dvec3 bounceDirection = glm::reflect(ray.getDirection(), closestHit.normal);
 		Ray bounceRay(closestHit.position + bounceDirection * 1.0e-6, bounceDirection);
 		glm::dvec3 bounceColor = (bounceLimit <= 0 ? background->getColor(bounceRay) : get_color(bounceRay, bounceLimit - 1));
-		return glm::mix(texture->sampleNearest(closestHit.textureU, closestHit.textureV) * 0.96 + 0.04, bounceColor, 0.5) * (closestHit.normal * 0.5 + 0.5);
-		//return glm::mix(bounceRay.getDirection() * 0.5 + 0.5, bounceColor, 0.5)  * (closestHit.normal * 0.5 + 0.5);
+		//return glm::mix(texture->sampleNearest(closestHit.textureU, closestHit.textureV) * 0.96 + 0.04, bounceColor, 0.5) * (closestHit.normal * 0.5 + 0.5);
+		return glm::mix(bounceRay.getDirection() * 0.5 + 0.5, bounceColor, 0.5)  * (closestHit.normal * 0.5 + 0.5);
 		//return bounceColor * 0.8;
 	}
 
