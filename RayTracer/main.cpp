@@ -22,7 +22,7 @@
 
 static constexpr int width = 1800;
 static constexpr int height = 900;
-static constexpr int sampleCount = 128;
+static constexpr int sampleCount = 16;
 
 static void rowCompleted();
 static void render_worker(Image* image, int startRow, int endRow);
@@ -80,7 +80,7 @@ int main(void)
 static void rowCompleted()
 {
 	static std::mutex mutex;
-	static unsigned int totalWork = width * height;
+	static unsigned int totalWork = (unsigned)width * (unsigned)height;
 	static unsigned int completedWork = 0;
 	static unsigned int percentCounter = 0;
 
@@ -143,8 +143,8 @@ static glm::dvec3 get_color(const Ray& ray, int bounceLimit)
 		glm::dvec3 bounceDirection = glm::reflect(ray.getDirection(), closestHit.normal);
 		Ray bounceRay(closestHit.position + bounceDirection * 1.0e-6, bounceDirection);
 		glm::dvec3 bounceColor = (bounceLimit <= 0 ? background->getColor(bounceRay) : get_color(bounceRay, bounceLimit - 1));
-		//return glm::mix(texture->sampleLinear(closestHit.textureU, closestHit.textureV) * 0.96 + 0.04, bounceColor, 0.5) * (closestHit.normal * 0.5 + 0.5);
-		return glm::mix(bounceRay.getDirection() * 0.5 + 0.5, bounceColor, 0.5)  * (closestHit.normal * 0.5 + 0.5);
+		return glm::mix(texture->sampleNearest(closestHit.textureU, closestHit.textureV) * 0.96 + 0.04, bounceColor, 0.5) * (closestHit.normal * 0.5 + 0.5);
+		//return glm::mix(bounceRay.getDirection() * 0.5 + 0.5, bounceColor, 0.5)  * (closestHit.normal * 0.5 + 0.5);
 		//return bounceColor * 0.8;
 	}
 

@@ -19,8 +19,8 @@ bool Plane::hit(const Ray& ray, HitRecord* hitRecord) const
 				hitRecord->t = t;
 				hitRecord->position = ray.getPoint(t);
 				hitRecord->normal = normal;
-				hitRecord->textureU = 0.0;
-				hitRecord->textureV = 0.0;
+				hitRecord->textureU = hitRecord->position.x;
+				hitRecord->textureV = -hitRecord->position.z;
 			}
 			return true;
 		}
