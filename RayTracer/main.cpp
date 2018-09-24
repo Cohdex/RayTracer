@@ -6,7 +6,6 @@
 #include "BackgroundGradient.h"
 #include "IHitable.h"
 #include "Sphere.h"
-#include "Plane.h"
 #include "Texture.h"
 
 #include "glm/glm.hpp"
@@ -23,15 +22,21 @@
 
 static constexpr int width = 1800;
 static constexpr int height = 900;
-static constexpr int sampleCount = 1;
+static constexpr int sampleCount = 16;
+
+struct Material
+{
+	glm::dvec3 color;
+};
 
 static void row_completed();
 static void render_worker(Image* image, int startRow, int endRow);
-static glm::dvec3 get_color(const Ray& ray, int bounceLimit);
-static glm::dvec3 random_unit_point();
+static glm::dvec3 get_color(const Ray& ray, int bounceLimit, std::default_random_engine& rndGen);
+static glm::dvec3 random_unit_point(std::default_random_engine& rndGen);
 
 static Camera camera;
 static std::vector<std::unique_ptr<IHitable>> hitables;
+static std::vector<Material> materials;
 static std::unique_ptr<Background> background;
 static std::unique_ptr<Texture> texture;
 
@@ -39,12 +44,19 @@ int main(void)
 {
 	Image image(width, height);
 
-	//hitables.push_back(std::make_unique<Sphere>(glm::dvec3(0.4, 0.0, -1.3), 0.5));
-	//hitables.push_back(std::make_unique<Sphere>(glm::dvec3(0.0, 0.0, -1.0), 0.5));
-	//hitables.push_back(std::make_unique<Sphere>(glm::dvec3(1.0, 0.0, -0.5), 0.3));
-	//hitables.push_back(std::make_unique<Plane>(glm::dvec3(0.0, -0.5, 0.0), glm::normalize(-glm::dvec3(0.0, 1.0, 0.0))));
+	hitables.push_back(std::make_unique<Sphere>(glm::dvec3(0.4, 0.0, -1.3), 0.5));
+	hitables.push_back(std::make_unique<Sphere>(glm::dvec3(1.0, 0.0, -0.5), 0.3));
 	hitables.push_back(std::make_unique<Sphere>(glm::dvec3(0.0, 0.0, -1.0), 0.5));
 	hitables.push_back(std::make_unique<Sphere>(glm::dvec3(0.0, -100.5, -1.0), 100.0));
+
+	materials.push_back({ glm::dvec3(1.0, 0.0, 0.0) });
+	hitables[0]->setMaterial(0);
+	materials.push_back({ glm::dvec3(0.0, 1.0, 0.0) });
+	hitables[1]->setMaterial(1);
+	materials.push_back({ glm::dvec3(0.0, 0.0, 1.0) });
+	hitables[2]->setMaterial(2);
+	materials.push_back({ glm::dvec3(1.0, 1.0, 0.0) });
+	hitables[3]->setMaterial(3);
 
 	background = std::make_unique<BackgroundGradient>(glm::dvec3(0.5, 0.7, 1.0), glm::dvec3(1.0, 1.0, 1.0));
 
@@ -104,7 +116,7 @@ static void render_worker(Image* image, int startRow, int endRow)
 {
 	std::default_random_engine rndGen;
 	std::uniform_real_distribution<double> rndDist(0.0, 1.0);
-	auto rnd = std::bind(rndDist, rndGen);
+	auto rnd = std::bind(rndDist, std::ref(rndGen));
 
 	for (int y = startRow; y < endRow; y++)
 	{
@@ -118,7 +130,7 @@ static void render_worker(Image* image, int startRow, int endRow)
 
 				Ray ray = camera.getRay(u, v);
 
-				color += get_color(ray, 100);
+				color += get_color(ray, 100, rndGen);
 			}
 			color /= sampleCount;
 
@@ -129,7 +141,7 @@ static void render_worker(Image* image, int startRow, int endRow)
 	}
 }
 
-static glm::dvec3 get_color(const Ray& ray, int bounceLimit)
+static glm::dvec3 get_color(const Ray& ray, int bounceLimit, std::default_random_engine& rndGen)
 {
 	if (bounceLimit >= 0)
 	{
@@ -147,12 +159,12 @@ static glm::dvec3 get_color(const Ray& ray, int bounceLimit)
 		if (closestHit.t > 0.0)
 		{
 #if 1
-			glm::dvec3 target = closestHit.position + closestHit.normal + random_unit_point();
-			return 0.5 * get_color(Ray(closestHit.position, target - closestHit.position), bounceLimit - 1);
+			glm::dvec3 target = closestHit.position + closestHit.normal + random_unit_point(rndGen);
+			return 0.5 * get_color(Ray(closestHit.position, target - closestHit.position), bounceLimit - 1, rndGen) * materials[closestHit.hit->getMaterial()].color;
 #else
 			glm::dvec3 bounceDirection = glm::reflect(ray.getDirection(), closestHit.normal);
 			Ray bounceRay(closestHit.position + bounceDirection * 1.0e-6, bounceDirection);
-			glm::dvec3 bounceColor = (bounceLimit <= 0 ? background->getColor(bounceRay) : get_color(bounceRay, bounceLimit - 1));
+			glm::dvec3 bounceColor = (bounceLimit <= 0 ? background->getColor(bounceRay) : get_color(bounceRay, bounceLimit - 1, rndGen));
 			//return glm::mix(texture->sampleNearest(closestHit.textureU, closestHit.textureV) * 0.96 + 0.04, bounceColor, 0.5) * (closestHit.normal * 0.5 + 0.5);
 			return glm::mix(bounceRay.getDirection() * 0.5 + 0.5, bounceColor, 0.5)  * (closestHit.normal * 0.5 + 0.5);
 			//return bounceColor * 0.8;
@@ -163,11 +175,10 @@ static glm::dvec3 get_color(const Ray& ray, int bounceLimit)
 	return background->getColor(ray);
 }
 
-static glm::dvec3 random_unit_point()
+static glm::dvec3 random_unit_point(std::default_random_engine& rndGen)
 {
-	std::default_random_engine rndGen;
 	std::uniform_real_distribution<double> rndDist(-1.0, 1.0);
-	auto rnd = std::bind(rndDist, rndGen);
+	auto rnd = std::bind(rndDist, std::ref(rndGen));
 
 	glm::dvec3 point;
 	do

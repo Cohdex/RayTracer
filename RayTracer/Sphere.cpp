@@ -21,6 +21,7 @@ bool Sphere::hit(const Ray& ray, HitRecord* hitRecord) const
 		auto recordData = [&](double t) {
 			if (hitRecord != nullptr)
 			{
+				hitRecord->hit = this;
 				hitRecord->t = t;
 				hitRecord->position = ray.getPoint(t);
 				hitRecord->normal = glm::normalize(hitRecord->position - center);
