@@ -30,7 +30,7 @@ struct Material
 };
 
 static void row_completed();
-static void render_worker(Image* image, int startRow, int endRow);
+static void render_worker(Image* image, int workerId, int workerCount);
 static glm::dvec3 get_color(const Ray& ray, int bounceLimit, std::default_random_engine& rndGen);
 static glm::dvec3 random_unit_point(std::default_random_engine& rndGen);
 
@@ -69,10 +69,7 @@ int main(void)
 
 	for (int i = 0; i < numWorkers; i++)
 	{
-		int startRow = i * height / numWorkers;
-		int endRow = (i + 1) * height / numWorkers;
-
-		workerThreads[i] = std::thread(render_worker, &image, startRow, endRow);
+		workerThreads[i] = std::thread(render_worker, &image, i, numWorkers);
 	}
 
 	for (auto& worker : workerThreads)
@@ -112,13 +109,13 @@ static void row_completed()
 	}
 }
 
-static void render_worker(Image* image, int startRow, int endRow)
+static void render_worker(Image* image, int workerId, int workerCount)
 {
 	std::default_random_engine rndGen;
 	std::uniform_real_distribution<double> rndDist(0.0, 1.0);
 	auto rnd = std::bind(rndDist, std::ref(rndGen));
 
-	for (int y = startRow; y < endRow; y++)
+	for (int y = workerId; y < height; y += workerCount)
 	{
 		for (int x = 0; x < width; x++)
 		{
