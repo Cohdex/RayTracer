@@ -38,8 +38,7 @@ void Image::write(const std::string& filename) const
 			int index = (x + y * width) * comp;
 			for (int i = 0; i < comp; i++)
 			{
-				double c = pixel[i];
-				data[index + i] = (unsigned char)glm::min((int)(c * 256), 255);
+				data[index + i] = (unsigned char)glm::min((int)(pixel[i] * 256), 255);
 			}
 		}
 	}

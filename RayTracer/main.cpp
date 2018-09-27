@@ -55,7 +55,7 @@ int main(void)
 	hitables[1]->setMaterial(1);
 	materials.push_back({ glm::dvec3(0.0, 0.0, 1.0) });
 	hitables[2]->setMaterial(2);
-	materials.push_back({ glm::dvec3(1.0, 1.0, 0.0) });
+	materials.push_back({ glm::dvec3(1.0, 1.0, 1.0) });
 	hitables[3]->setMaterial(3);
 
 	background = std::make_unique<BackgroundGradient>(glm::dvec3(0.5, 0.7, 1.0), glm::dvec3(1.0, 1.0, 1.0));
@@ -119,7 +119,7 @@ static void render_worker(Image* image, int workerId, int workerCount)
 	{
 		for (int x = 0; x < width; x++)
 		{
-			glm::dvec3 color;
+			glm::dvec3 color(0.0);
 			for (int i = 0; i < sampleCount; i++)
 			{
 				double u = (x + rnd()) / width;
